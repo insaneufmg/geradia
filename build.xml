@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project default="compile" name="Geradia">
+	<property file="build.properties"/>
+	
+	<!-- Goal: delete all created files -->
+	<target name="clean_all" depends="clean_classes, clean_javadoc, clean_zip"/>
+	
+	<!-- Goal: delete ZIP files created -->
+	<target name="clean_zip">
+		<delete dir="${zip.dir}"/>
+	</target>
+	
+	<!-- Goal: delete intermediate files created -->
+	<target name="clean_classes">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+		<delete file="${dist.dir}/${app.name}.jar"/>
+	</target>
+	
+	<!-- Goal: delete documentation -->
+	<target name="clean_javadoc">
+		<delete dir="${docs.dir}/api"/>
+	</target>
+	
+	<!-- Goal: compile -->
+	<target name="compile">
+		<mkdir dir="${build.dir}"/>
+		<javac destdir="${build.dir}" srcdir="${src.dir}">
+			<classpath>
+				<pathelement location="${build.dir}"/>
+			</classpath>
+		</javac>
+	</target>
+	
+	<!-- Goal: build the aplication. Puts everything in a JAR file -->
+	<target name="build" depends="compile">
+		<mkdir dir="${dist.dir}"/>
+		<copy todir="${build.dir}/images">
+			<fileset dir="${src.dir}/images"/>
+		</copy>
+		<!-- Creates JAR and builds a manifest -->
+		<jar destfile="${dist.dir}/${app.name}.jar">
+			<manifest>
+				<attribute name="Main-class" value="${app.main.class}"/>
+			</manifest>
+			<fileset dir="${build.dir}"/>
+		</jar>
+	</target>
+	
+	<!-- Goal: generate API documentation in the subdirectory "api" of "docs" -->
+	<target name="javadoc" depends="build">
+		<mkdir dir="${docs.dir}/api"/>
+		<javadoc destdir="${docs.dir}/api" packagenames="*.*" sourcepath="${src.dir}"/>
+	</target>
+	
+	<!-- Goal: creates the JAR file -->
+	<target name="run" depends="build">
+		<java jar="${dist.dir}/${app.name}.jar" fork="true"/>
+	</target>
+	
+	<!-- Goal: creates two ZIP files: source code and binary -->
+	<target name="zip" depends="build">
+		<mkdir dir="${zip.dir}"/>
+		<zip destfile="${zip.dir}/${zipsrc.file}.zip">
+			<zipfileset dir="${src.dir}" prefix="Insane/src"/>
+			<zipfileset dir="." includes="build.xml" prefix="Insane"/>
+			<zipfileset dir="." includes="build.properties" prefix="Insane"/>
+			<zipfileset dir="." includes="InsaneData.dtd" prefix="Insane"/>
+		</zip>
+		<zip destfile="${zip.dir}/${zipbin.file}.zip">
+			<zipfileset dir="${dist.dir}" prefix="Insane"/>
+		</zip>
+	</target>
+	
+</project>
