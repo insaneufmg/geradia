@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 
 /**
  *
- * @author Fonseca, Flavio Pitangueira, Roque
+ * @author Fonseca, Flavio Pitangueira, Roque Luiz
  * @since January 2004
  */
 public class CmdButton extends JButton implements CommandHolder {
